@@ -1,6 +1,6 @@
 import express from 'express';
 import { exec } from 'child_process';
-import { v4 as uuidv4 } from 'uuid';
+import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import cors from 'cors';
@@ -22,7 +22,7 @@ app.post('/execute', (req, res) => {
     return res.status(400).json({ error: 'Language and code are required' });
   }
 
-  const fileId = uuidv4();
+  const fileId = crypto.randomUUID();
   let ext = '';
   let image = '';
 
@@ -41,7 +41,8 @@ app.post('/execute', (req, res) => {
 
   fs.writeFileSync(filePath, code);
 
-  const dockerCmd = `docker run --rm --memory=256m --cpus=0.5 -v ${TEMP_DIR}:/app ${image} /app/${fileName}`;
+  // THE FIX: We use '-i' and '<' to pipe the file directly into the container!
+  const dockerCmd = `docker run --rm -i --memory=256m --cpus=0.5 ${image} < "${filePath}"`;
 
   exec(dockerCmd, (error, stdout, stderr) => {
     if (fs.existsSync(filePath)) {

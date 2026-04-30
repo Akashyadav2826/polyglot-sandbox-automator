@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+
+# Local execution artifacts
+temp/
+*.log
+
+# Compiled outputs
+dist/
+build/
+
+# Environment configuration
+.env
+
+# OS Metadata
+.DS_Store
+Thumbs.db
